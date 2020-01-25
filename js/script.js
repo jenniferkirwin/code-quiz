@@ -27,16 +27,40 @@ let questions = [
 
 let quizDiv = $("#quiz");
 let timerDisp = $(".timer");
-let highScores = $(".highScores");
-let arrayIndex = 0;
-let score = 60;
+let scoresTable = $(".scoresTable");
+let arrayIndex = 0; 
+let currentScore = 20;
 let finalScore;
-let t;
-let userHighScores = JSON.parse(localStorage.getItem("userHighScores"));
+let t; // t is for the timer
+let userScores; 
+let elem = document.querySelector('.modal'); // Modal variable
+let instance = M.Modal.init(elem); // Modal variable
 
-console.log(userHighScores);
+// -------------------------------------------------------------------------------------
+// seeing if scores are in storage & rendering them
+// -------------------------------------------------------------------------------------
 
+if (localStorage.getItem("userScores") !== null) {
+  userScores = JSON.parse(localStorage.getItem("userScores"));
+  userScoresInd = userScores.length;
+  scoreList();
+}
+
+else {
+  userScores = [];
+};
+
+function scoreList() {
+  for (let i = 0; i < userScores.length; i++) {
+    let tr = scoresTable.append($("<tr>"));
+    tr.append($("<td>").text(userScores[i].name));
+    tr.append($("<td>").text(userScores[i].score));
+  };  
+};
+
+// -------------------------------------------------------------------------------------
 // Start the Quiz
+// -------------------------------------------------------------------------------------
 
 $(document).on("click", ".btn-start", function() {
   $(".btn-large").addClass("disabled");
@@ -45,25 +69,30 @@ $(document).on("click", ".btn-start", function() {
   renderQuestion();
 });
 
+// -------------------------------------------------------------------------------------
 // Timer Function
+// -------------------------------------------------------------------------------------
 
 function countDown() {
-    score--;
+    currentScore--;
     timer();
-    timerDisp.text(score);
+    timerDisp.text(currentScore);
 }
 
 function timer() {
     t = setTimeout(countDown, 1000);
-      if (score < 1 || arrayIndex > questions.length - 1) {
+      if (currentScore < 1 || arrayIndex > questions.length - 1) {
     clearTimeout(t);
   }
 }
 
+// -------------------------------------------------------------------------------------
 // shows a question to the user
+// -------------------------------------------------------------------------------------
+
 function renderQuestion() {
 
-  if (arrayIndex < questions.length) {
+  if (arrayIndex < questions.length && currentScore > 0) {
       
     quizDiv.append($("<p>").text(questions[arrayIndex].quest));
 
@@ -77,7 +106,9 @@ function renderQuestion() {
   };
 };
 
+// -------------------------------------------------------------------------------------
 // takes the question, checks if correct, increments to next question
+// -------------------------------------------------------------------------------------
 
 $(document).on("click", ".btn-choice", function() {
   let choice = $(this).text();
@@ -88,7 +119,7 @@ $(document).on("click", ".btn-choice", function() {
 
   else {
     // trigger loosing toast message
-    score = score - 10;
+    currentScore = currentScore - 10;
     $(".card").addClass("shake");
     M.toast({html: `Oops, the correct answer is ${questions[arrayIndex].choice[3]}`});
           setTimeout(function() {
@@ -100,20 +131,28 @@ $(document).on("click", ".btn-choice", function() {
   renderQuestion();
 });
 
+// -------------------------------------------------------------------------------------
 // End of Game
+// -------------------------------------------------------------------------------------
 
 function endGame() {
   clearTimeout(t);
-  let elem = document.querySelector('.modal');
-  let instance = M.Modal.init(elem);
   M.Toast.dismissAll();
-  finalScore = score;
+  quizDiv.empty();
+  if (currentScore < 1) {
+    finalScore = 0;
+  }
+  else {
+    finalScore = currentScore;
+  }
+  
   $(".finalScore").text(finalScore);
-  score = 60;
-  timerDisp.text(score);
+  currentScore = 60;
+  timerDisp.text(currentScore);
   instance.open();
   $(".btn-large").removeClass("disabled");
 };
+
 
 
     // randomize/shuffle basePassword array
@@ -134,35 +173,32 @@ function endGame() {
     //   return array;
     // };
  
+// -------------------------------------------------------------------------------------
 // Create object to store score in local storage
+// -------------------------------------------------------------------------------------
 
-$("#submit").on("click", function() {
+$("#submit").on("click", function(e) {
+  // push to storage
   let userName = $("#name").val();
+  newScore = {
+    "name": userName,
+    "score": finalScore
+  }
+  userScores.push(newScore);
+  localStorage.setItem("userScores", JSON.stringify(userScores));
+  $("#name").val("");
 
-  // if (userHighScores !== null) {
-  //   userHighScores[userHighScores.length] = {
-  //     username: userName.trim(),
-  //     score: finalScore
-  //   };
-  // }
-
-  // else {
-  //   userHighScores[0] = {
-  //     username: userName.trim(),
-  //     score: finalScore
-  //   };
-  // };
-
-  // retrieve JSON object
-  // append new element to JSON object
-  // set new 
-  // https://stackoverflow.com/questions/736590/add-new-attribute-element-to-json-object-using-javascript
-  
-
-  console.log(userHighScores[0]);
+  // render on table
+  let tr = scoresTable.append($("<tr>"));
+  tr.append($("<td>").text(userScores[userScores.length-1].name));
+  tr.append($("<td>").text(userScores[userScores.length-1].score));
+  instance.close();
 });
 
-// Display the latest user high scores
-
+$(".btn-clear").on("click", function() {
+  localStorage.clear();
+  userScores = [];
+  scoresTable.empty();
+});
 
 });
