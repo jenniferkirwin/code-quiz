@@ -13,6 +13,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
   <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
 </head>
 
 <body>
@@ -23,7 +24,19 @@
         <h1>Javascript Quiz</h1>
         <p>List Rules Here</p>
         <p>Quiz Time Here</p>
-        <p><button type="button" class="btn-large mycolor">Start!</button> <button type="button" class="btn-large mycolor">View High Scores</button></p>
+        <p><button type="button" class="btn-large mycolor btn-start">Start!</button> <button type="button" class="btn-large mycolor">View High Scores</button></p>
+      </div>
+    </div>
+
+    <!-- Quiz Intro -->
+    <div class="row center-align">
+      <div class="col s12 m6">
+        <div class="card animated">
+          <div class="card-content">
+            <span class="card-title">Time Remaining</span>
+            <p class="timer">60</p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -33,13 +46,28 @@
       </div>
     </div>
 
+    <!-- High Scores -->
+
+      <table>
+        <thead>
+          <tr>
+              <th>Name</th>
+              <th>Score</th>
+          </tr>
+        </thead>
+        <tbody class="highScores">
+        </tbody>
+      </table>
+
     <!-- Modal for Final Score -->
     <div id="modal1" class="modal">
       <div class="modal-content">
         <h4>Game Over!</h4>
-        <p>Your Score: <span class="score"></span></p>
-        <input type="text" name="name" id="name"/>
-        <button type="button" class="btn-large mycolor">Submit Score</button>
+        <p>Your Score: <span class="finalScore"></span></p>
+        <form>
+          <input type="text" name="name" id="name"/>
+          <button type="button" class="btn-large mycolor" id="submit">Submit Score</button>
+        </form>
       </div>
     </div>
 
