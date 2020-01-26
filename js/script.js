@@ -5,23 +5,23 @@ $(document).ready(function() {
 let questions = [
   {
     "quest" : "What is JavaScript's official name?",
-    "choice" : ["Java", "Cascading Style Sheets", "JS", "ECMAScript"],
-    "correct" : 3
+    "choice" : ["Java", "ECMAScript", "Cascading Style Sheets", "JS"],
+    "correct" : 1
   },
   {
     "quest" : "What HTML element does JavaScript go in?",
-    "choice" : ["&lt;function>", "<link>", "<js>", "<script>"],
+    "choice" : ["&lt;function&gt;", "&lt;link&gt;", "&lt;js&gt;", "&lt;script&gt;"],
     "correct" : 3
   },
   {
     "quest" : "How do you create a function in JavaScript?",
-    "choice" : ["myDemo function()", "function = myDemo()", "myDemo:function()", "function myDemo()"],
-    "correct" : 3
+    "choice" : ["myDemo function()", "function = myDemo()", "function myDemo()", "myDemo:function()"],
+    "correct" : 2
   },
   {
     "quest" : "How do you call a function in JavaScript?",
-    "choice" : ["render myDemo()", "function = myDemo()", "function:myDemo()", "myDemo()"],
-    "correct" : 3
+    "choice" : ["render myDemo();", "function = myDemo();",  "myDemo();", "function:myDemo();"],
+    "correct" : 2
   }
 ];
 
@@ -29,7 +29,7 @@ let quizDiv = $("#quiz");
 let timerDisp = $(".timer");
 let scoresTable = $(".scoresTable");
 let arrayIndex = 0; 
-let currentScore = 20;
+let currentScore = 60;
 let finalScore;
 let t; // t is for the timer
 let userScores; 
@@ -99,7 +99,7 @@ function renderQuestion() {
     quizDiv.append($("<p>").text(questions[arrayIndex].quest));
 
     for (let j = 0; j < questions[arrayIndex].choice.length; j++) {
-      quizDiv.append($("<button>").text(questions[arrayIndex].choice[j]).addClass("btn-choice btn-large mycolor"));
+      quizDiv.append($("<button>").html(questions[arrayIndex].choice[j]).attr("data-index", j).addClass("btn-choice btn-large mycolor"));
     };
   }
 
@@ -113,8 +113,10 @@ function renderQuestion() {
 // -------------------------------------------------------------------------------------
 
 $(document).on("click", ".btn-choice", function() {
-  let choice = $(this).text();
-  if (choice === questions[arrayIndex].choice[3]) {
+  let correctAns = questions[arrayIndex].correct;
+  let choice = parseInt($(this).attr("data-index"));
+
+  if (choice === correctAns) {
     // trigger toast message
     M.toast({html: 'Correct!'});
   }
@@ -124,7 +126,7 @@ $(document).on("click", ".btn-choice", function() {
     currentScore = currentScore - 10;
     timerDisp.text(currentScore);
     $(".card").addClass("shake");
-    M.toast({html: `Oops, the correct answer is ${encodeURI(questions[arrayIndex].choice[3])}`});
+    M.toast({html: `Oops, the correct answer is ${questions[arrayIndex].choice[correctAns]}`});
           setTimeout(function() {
         $(".card").removeClass("shake");
       }, 800);
@@ -175,14 +177,27 @@ function endGame() {
     //   }
     //   return array;
     // };
+
+    // OR https://stackoverflow.com/questions/3718282/javascript-shuffling-objects-inside-an-object-randomize
  
 // -------------------------------------------------------------------------------------
 // Create object to store score in local storage
 // -------------------------------------------------------------------------------------
 
 $("#submit").on("click", function(e) {
-  // push to storage
+
   let userName = $("#name").val();
+  
+  if (userName === "") {
+    $(".modal").addClass("shake");
+    setTimeout(function() {
+      $(".modal").removeClass("shake");
+    }, 800);
+    return;
+    
+  }
+  // push to storage
+  
   newScore = {
     "name": userName,
     "score": finalScore
