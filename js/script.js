@@ -10,7 +10,7 @@ let questions = [
   },
   {
     "quest" : "What HTML element does JavaScript go in?",
-    "choice" : ["<function>", "<link>", "<js>", "<script>"],
+    "choice" : ["&lt;function>", "<link>", "<js>", "<script>"],
     "correct" : 3
   },
   {
@@ -83,8 +83,10 @@ function timer() {
     t = setTimeout(countDown, 1000);
       if (currentScore < 1 || arrayIndex > questions.length - 1) {
     clearTimeout(t);
+    endGame();
   }
 }
+
 
 // -------------------------------------------------------------------------------------
 // shows a question to the user
@@ -120,8 +122,9 @@ $(document).on("click", ".btn-choice", function() {
   else {
     // trigger loosing toast message
     currentScore = currentScore - 10;
+    timerDisp.text(currentScore);
     $(".card").addClass("shake");
-    M.toast({html: `Oops, the correct answer is ${questions[arrayIndex].choice[3]}`});
+    M.toast({html: `Oops, the correct answer is ${encodeURI(questions[arrayIndex].choice[3])}`});
           setTimeout(function() {
         $(".card").removeClass("shake");
       }, 800);
